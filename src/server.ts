@@ -11,7 +11,7 @@ import app from "./app.js";
 const port = process.env.PORT;
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect(process.env.MONGODB_URI!, {
     serverSelectionTimeoutMS: 5000,
   })
   .then(() => console.log("DB Connected Successfully...."))
