@@ -63,7 +63,7 @@ function errorHandler(
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  if (process.env.ENVIRONMENT === "development") {
+  if (process.env.NODE_ENV === "development") {
     sendErrorDevelopment(err, res);
     return;
   }
@@ -74,7 +74,6 @@ function errorHandler(
   if (error.name === "JsonWebTokenError") error = handleJWTError();
   if (error.name === "TokenExpiredError") error = handleExpiredError();
   if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-
   if (error.name === "ValidationError") error = handleValidationErrorDB(error);
 
   sendErrorProduction(error, res);

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";
+import app from "./app.js";
+const port = process.env.PORT || 8000;
 
 process.on("uncaughtException", (err) => {
   console.log("Uncaught Exception!, Shutting down....");
@@ -8,26 +8,20 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-// for get __dirname with ES
-import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, "./config/.env") });
-
-import app from "./app.js";
-const port = process.env.PORT;
-
 mongoose
   .connect(process.env.MONGODB_URI!, {
     serverSelectionTimeoutMS: 5000,
   })
-  .then(() => console.log("DB Connected Successfully...."))
+  .then(() => {
+    console.log("✅ Database connected successfully");
+  })
   .catch((err) => {
     console.log(err);
     process.exit(1);
   });
 
-const server = app.listen(() => {
-  console.log(`Running On Port ${port}`, `127.0.0.1:${port}/api`);
+const server = app.listen(port, () => {
+  console.log(`🚀 Server running On 127.0.0.1:${port}/api`);
 });
 
 process.on("unhandledRejection", (err: any) => {
