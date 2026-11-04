@@ -63,11 +63,6 @@ function errorHandler(
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  if (process.env.NODE_ENV === "development") {
-    sendErrorDevelopment(err, res);
-    return;
-  }
-
   let error: AppError = err;
 
   if (error.name === "CastError") error = handleCastErrorDB(error);
@@ -76,7 +71,11 @@ function errorHandler(
   if (error.code === 11000) error = handleDuplicateFieldsDB(error);
   if (error.name === "ValidationError") error = handleValidationErrorDB(error);
 
-  sendErrorProduction(error, res);
+  if (process.env.NODE_ENV === "development") {
+    sendErrorDevelopment(error, res);
+  } else {
+    sendErrorProduction(error, res);
+  }
 }
 
 export default errorHandler;
