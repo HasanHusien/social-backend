@@ -1,1 +1,8 @@
-export function register(){}
+export function register(){
+
+  const {email, password}
+
+
+
+
+}
