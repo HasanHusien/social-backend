@@ -1,6 +1,7 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Query } from "mongoose";
 import { isEmail } from "validator";
 import type { IUser } from "../types/userTypes.js";
+import bcrypt from "bcryptjs";
 
 export const userSchema = new Schema<IUser>({
   name: {
@@ -43,7 +44,39 @@ export const userSchema = new Schema<IUser>({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
+
+// before saving encrypt password
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+});
+
+userSchema.pre("save", function () {
+  if (!this.isModified("password") || this.isNew) return;
+
+  this.passwordChangedAt = Date.now() - 1000;
+});
+
+// soft delete fn called before any query called find()
+userSchema.pre(/^find/, function (this: Query<any, any>) {
+  this.find({ active: { $ne: false } });
+});
+
+userSchema.methods.correctPassword = async function (
+  candidatePassword: string,
+  userPassword: string,
+): Promise<boolean> {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = model("User", userSchema);
 
