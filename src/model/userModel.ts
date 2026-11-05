@@ -1,9 +1,11 @@
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+import type { IUser, IUserMethods, UserModel } from "../types/userTypes.js";
 import { model, Schema, Query } from "mongoose";
 import { isEmail } from "validator";
-import type { IUser } from "../types/userTypes.js";
-import bcrypt from "bcryptjs";
 
-export const userSchema = new Schema<IUser>({
+export const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {
     type: String,
     required: [true, "Name is required"],
@@ -78,6 +80,33 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-const User = model("User", userSchema);
+userSchema.methods.changePasswordAfter = function (
+  JWTTimestamp: number,
+): boolean {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = Math.floor(
+      this.passwordChangedAt.getTime() / 1000,
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  return false;
+};
+
+userSchema.methods.createPasswordRestToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
+
+const User = model<IUser, UserModel>("User", userSchema);
 
 export default User;
