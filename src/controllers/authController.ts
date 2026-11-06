@@ -1,8 +1,9 @@
 export function register(){
 
-  const {email, password}
+  const user = 
 
 
 
 
+'generate'
 }

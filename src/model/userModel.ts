@@ -108,5 +108,4 @@ userSchema.methods.createPasswordRestToken = function () {
 };
 
 const User = model<IUser, UserModel>("User", userSchema);
-
 export default User;
