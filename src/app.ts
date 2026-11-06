@@ -3,10 +3,12 @@ import userRouter from "./routes/userRoutes.js";
 import morgan from "morgan";
 import errorHandler from "./controllers/errorController.js";
 import AppError from "./utils/appError.js";
+import cookieParser from "cookie-parser";
 import type { NextFunction, Response, Request } from "express";
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
