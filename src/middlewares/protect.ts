@@ -1,8 +1,9 @@
 import type { Request, RequestHandler } from "express";
 import { catchAsync } from "../utils/catchAsync.js";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import { HTTP_STATUS } from "../constants/httpStatus.js";
 
 import AppError from "../utils/appError.js";
-import jwt, { type JwtPayload } from "jsonwebtoken";
 import User from "../model/userModel.js";
 
 interface TokenPayload extends JwtPayload {
@@ -21,7 +22,12 @@ const protect: RequestHandler = catchAsync(async (req, res, next) => {
   let token = extractToken(req);
 
   if (!token) {
-    return next(new AppError("You are not logged in. Please log in.", 401));
+    return next(
+      new AppError(
+        "You are not logged in. Please log in.",
+        HTTP_STATUS.UNAUTHORIZED,
+      ),
+    );
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
@@ -29,14 +35,20 @@ const protect: RequestHandler = catchAsync(async (req, res, next) => {
 
   if (!user) {
     return next(
-      new AppError("The user belonging to this token no longer exists.", 401),
+      new AppError(
+        "The user belonging to this token no longer exists.",
+        HTTP_STATUS.UNAUTHORIZED,
+      ),
     );
   }
 
   // decoded.iat is token creating time && jwt.sign adds iat automatically
   if (decoded.iat && user.changedPasswordAfter(decoded.iat)) {
     return next(
-      new AppError("Password was changed recently. Please log in again.", 401),
+      new AppError(
+        "Password was changed recently. Please log in again.",
+        HTTP_STATUS.UNAUTHORIZED,
+      ),
     );
   }
   req.user = user;
@@ -49,7 +61,7 @@ const restrictTo = (...roles: string[]): RequestHandler => {
     if (!roles.includes(req.user.role)) {
       return new AppError(
         "You do not have a permission to perform this action",
-        403,
+        HTTP_STATUS.FORBIDDEN,
       );
     }
 
