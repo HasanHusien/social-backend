@@ -5,6 +5,7 @@ import errorHandler from "./controllers/errorController.js";
 import AppError from "./utils/appError.js";
 import cookieParser from "cookie-parser";
 import type { NextFunction, Response, Request } from "express";
+import { HTTP_STATUS } from "./constants/httpStatus.js";
 
 const app = express();
 app.use(express.json());
@@ -18,7 +19,12 @@ app.use("/api/users", userRouter);
 
 // unKnown Rotes
 app.use((req: Request, res: Response, next: NextFunction) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+  next(
+    new AppError(
+      `Can't find ${req.originalUrl} on this server`,
+      HTTP_STATUS.NOT_FOUND,
+    ),
+  );
 });
 
 app.use(errorHandler);

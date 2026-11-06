@@ -1,10 +1,11 @@
+import { HTTP_STATUS } from "../constants/httpStatus.js";
 import AppError from "../utils/appError.js";
 import type { NextFunction, Request, Response } from "express";
 
 const handleCastErrorDB = (err: AppError): AppError => {
   const message = `Invalid ${err.path}: ${err.value}`;
 
-  return new AppError(message, 400);
+  return new AppError(message, HTTP_STATUS.BAD_REQUEST);
 };
 
 const handleDuplicateFieldsDB = (err: AppError): AppError => {
@@ -18,15 +19,24 @@ const handleDuplicateFieldsDB = (err: AppError): AppError => {
 
 const handleValidationErrorDB = (err: AppError): AppError => {
   const messages = Object.values(err.errors ?? {}).map((el) => el.message);
-  return new AppError(`Invalid input data. ${messages.join(". ")}`, 400);
+  return new AppError(
+    `Invalid input data. ${messages.join(". ")}`,
+    HTTP_STATUS.BAD_REQUEST,
+  );
 };
 
 const handleJWTError = () => {
-  return new AppError("Invalid token please try again", 401);
+  return new AppError(
+    "Invalid token please try again",
+    HTTP_STATUS.UNAUTHORIZED,
+  );
 };
 
 const handleExpiredError = () => {
-  return new AppError("Token has been expired, please login again", 401);
+  return new AppError(
+    "Token has been expired, please login again",
+    HTTP_STATUS.UNAUTHORIZED,
+  );
 };
 
 const sendErrorDevelopment = (err: AppError, res: Response): void => {
@@ -46,7 +56,7 @@ const sendErrorProduction = (err: AppError, res: Response): void => {
   } else {
     console.error("UNEXPECTED ERROR:", err);
 
-    res.status(500).json({
+    res.status(HTTP_STATUS.SERVER_ERROR).json({
       status: "error",
       message:
         "Something went wrong. If the problem continues, please contact support.",
@@ -60,7 +70,7 @@ function errorHandler(
   res: Response,
   next: NextFunction,
 ): void {
-  err.statusCode = err.statusCode || 500;
+  err.statusCode = err.statusCode || HTTP_STATUS.SERVER_ERROR;
   err.status = err.status || "error";
 
   let error: AppError = err;
