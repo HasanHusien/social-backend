@@ -2,7 +2,6 @@ import type { Request, RequestHandler } from "express";
 import { catchAsync } from "../utils/catchAsync.js";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { HTTP_STATUS } from "../constants/httpStatus.js";
-
 import AppError from "../utils/appError.js";
 import User from "../model/userModel.js";
 
