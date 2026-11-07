@@ -1,9 +1,15 @@
-export function register(){
+import type { RequestHandler } from "express";
+import { catchAsync } from "../utils/catchAsync.js";
+import { createSendToken } from "../utils/sendToken.js";
+import User from "../model/userModel.js";
 
-  const user = 
+export const register: RequestHandler = catchAsync(async (req, res, _next) => {
+  const user = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
+  });
 
-
-
-
-'generate'
-}
+  createSendToken(user, 200, res);
+});

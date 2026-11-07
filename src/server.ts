@@ -10,7 +10,8 @@ process.on("uncaughtException", (err) => {
 
 mongoose
   .connect(process.env.MONGODB_URI!, {
-    serverSelectionTimeoutMS: 5000,
+    dbName:"social-network",
+    serverSelectionTimeoutMS: 5000
   })
   .then(() => {
     console.log("✅ Database connected successfully");

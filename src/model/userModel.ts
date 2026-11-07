@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 import type { IUser, IUserMethods, UserModel } from "../types/userTypes.js";
 import { model, Schema, Query } from "mongoose";
-import { isEmail } from "validator";
+import validator from "validator";
 
 export const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {
@@ -15,7 +15,7 @@ export const userSchema = new Schema<IUser, UserModel, IUserMethods>({
     required: [true, "Email is required"],
     unique: [true, "Email should be unique"],
     lowercase: true,
-    validate: [isEmail, "Please provide a valid email"],
+    validate: [validator.isEmail, "Please provide a valid email"],
   },
   photo: {
     type: String,
@@ -40,7 +40,7 @@ export const userSchema = new Schema<IUser, UserModel, IUserMethods>({
       validator: function (this: any, el: string): boolean {
         return el === this.password;
       },
-      message: "password confirm is failed",
+      message: "Passwords should be the same.",
     },
   },
   passwordChangedAt: Date,
