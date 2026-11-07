@@ -1,0 +1,16 @@
+// Read a required variable, and stop the app early if it is missing
+const required = (name: string): string => {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing environment variable: ${name}`);
+
+  return value;
+};
+
+export const env = {
+  nodeEnv: process.env.NODE_ENV || "production",
+  port: Number(process.env.PORT) || 8000,
+  mongoUrl: required("MONGODB_URI"),
+  jwtSecret: required("JWT_SECRET"),
+  jwtExpiresIn: required("JWT_EXPIRES_IN"),
+  cookieExpiresIn: required("JWT_COOKIE_EXPIRES_IN"),
+};
