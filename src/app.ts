@@ -1,11 +1,9 @@
 import express from "express";
-import userRouter from "./routes/userRoutes.js";
+import userRouter from "./routes/user.routes.js";
 import morgan from "morgan";
-import errorHandler from "./controllers/errorController.js";
-import AppError from "./utils/appError.js";
+import errorHandler from "./controllers/error.controller.js";
 import cookieParser from "cookie-parser";
-import type { NextFunction, Response, Request } from "express";
-import { HTTP_STATUS } from "./constants/httpStatus.js";
+import notFound from "./middlewares/notFound.js";
 
 const app = express();
 app.use(express.json());
@@ -17,16 +15,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/api/users", userRouter);
 
-// unKnown Rotes
-app.use((req: Request, res: Response, next: NextFunction) => {
-  next(
-    new AppError(
-      `Can't find ${req.originalUrl} on this server`,
-      HTTP_STATUS.NOT_FOUND,
-    ),
-  );
-});
-
+app.use(notFound);
 app.use(errorHandler);
 
 export default app;

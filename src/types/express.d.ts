@@ -1,5 +1,5 @@
 import type { HydratedDocument } from "mongoose";
-import type { IUser } from "../model/userModel.js";
+import type { IUser } from "../model/userModel.ts";
 
 declare global {
   namespace Express {

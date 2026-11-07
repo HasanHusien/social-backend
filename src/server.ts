@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import app from "./app.js";
-const port = process.env.PORT || 8000;
+import { env } from "./config/env.js";
 
 process.on("uncaughtException", (err) => {
   console.log("Uncaught Exception!, Shutting down....");
@@ -20,8 +20,8 @@ mongoose
     process.exit(1);
   });
 
-const server = app.listen(port, () => {
-  console.log(`🚀 Server running On 127.0.0.1:${port}/api`);
+const server = app.listen(env.port, () => {
+  console.log(`🚀 Server running On 127.0.0.1:${env.port}/api`);
 });
 
 process.on("unhandledRejection", (err: any) => {
