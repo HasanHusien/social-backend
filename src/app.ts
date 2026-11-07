@@ -1,7 +1,7 @@
 import express from "express";
 import userRouter from "./routes/user.routes.js";
 import morgan from "morgan";
-import errorHandler from "./controllers/error.controller.js";
+import errorHandler from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import notFound from "./middlewares/notFound.js";
 
